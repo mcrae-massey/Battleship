@@ -2,21 +2,23 @@ package client;
 
 import java.net.InetAddress;
 
+import common.MessageListener;
 import common.MessageSource;
 
-public class BattleClient {
+public class BattleClient extends MessageSource implements MessageListener {
+
 	/**
 	 * 
 	 */
 	private InetAddress host;
-	
+
 	/**
-	 * 
+	 * user port
 	 */
 	private int port;
-	
+
 	/**
-	 * 
+	 * Name of the user
 	 */
 	private String username;
 
@@ -32,19 +34,33 @@ public class BattleClient {
 		this.port = port;
 		this.username = username;
 	}
-	
+
 	/**
 	 * 
 	 */
-	public void connect(){
+	public void connect() {
 		
 	}
-	
+
 	/**
 	 * 
 	 */
-	public void messageReceived(String message, MessageSource source){
+	public void messageReceived(String message, MessageSource source) {
+
+	}
+
+	/**
+	 * 
+	 */
+	public void sourceClosed(MessageSource source) {
+
+	}
+
+	/**
+	 * 
+	 */
+	public void send(String message) {
 		
 	}
-	
+
 }
