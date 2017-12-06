@@ -1,15 +1,23 @@
 package server;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.StringJoiner;
 
-
+/**
+ * @author McRae Massey and CJ Bland
+ * @version 11/17/2017
+ * grid class makes a grid, populates it with the appropriate amount of ships and
+ * provides the fire() method to hit the ships.
+ *  exit 1 - board size too small.
+ *  exit 2 - fired out of bounds.
+ */
 public class Grid {
 
 	/** Size of rows and columns for the grid */
 	private int size;
 
-	/** 2D array to store values for grid */
+	/** 2D array to star values for grid */
 	private String[][] grid;
 
 	/** Array of ship types */
@@ -23,25 +31,29 @@ public class Grid {
 
 	/**
 	 * Constructor initializes the size of the grid.
-	 * @param size the length and width of the grid
+	 * 
+	 * @param size
+	 *            the length and width of the grid
 	 */
 	public Grid(int size) {
 		this.size = size;
 	}
 
 	/**
-	 * Makes an empty grid, populates it with ships, then prints it out.
+	 * Makes an empty grid the populates it with ships and prints it out.
 	 */
 	public void makeGrid() {
 		grid = new String[size][size];
 
 		fill(grid, " ");
 		placeShips();
-		//gridFormatPrint();
+		gridFormatPrint();
 	}
 
 	/**
 	 * Prints out the grid structure with numbers on each axis.
+	 * 
+	 * @param grid - the grid to be printed.
 	 */
 	public void gridFormatPrint() {
 
@@ -83,11 +95,13 @@ public class Grid {
 	}
 
 	/**
-	 * This method will fill the grid 2D array with the default value passed in as
-	 * a parameter.
+	 * This method will fill the grid 2D array with the default value passed in
+	 * as a parameter.
 	 * 
-	 * @param array - the grid
-	 * @param element - what the grid should be initialized with(space).
+	 * @param array
+	 *            - the grid
+	 * @param element
+	 *            - what the grid should be initialized with(space).
 	 */
 	public void fill(String[][] array, String element) {
 		for (String[] subarray : array) {
@@ -96,9 +110,9 @@ public class Grid {
 	}
 
 	/**
-	 * Checks the size of the grid to use the correct amount of ships then randomly
-	 * populates the board with one ship of each type with that types length. The ships
-	 * will not overlap one another.
+	 * Checks the size of the grid to use the correct amount of ships then
+	 * randomly populates the board with one ship of each type with that types
+	 * length. The ships will not overlap one another.
 	 */
 	public void placeShips() {
 
@@ -133,7 +147,7 @@ public class Grid {
 			numShips = 4;
 			type = new String[] { "B", "S", "D", "P" };
 			typeSize = new int[] { 4, 3, 3, 2 };
-			//error if board size is smaller than 4
+			// error if board size is smaller than 4
 		} else if (size < 4) {
 			System.out.println("Board size too small!");
 			java.lang.System.exit(1);
@@ -145,16 +159,14 @@ public class Grid {
 				overlap = false;
 
 				// get a random x coordinate
-				x = (int) (Math.random() * (size)); /**CJ- Should this be mod instead of *? */
+				x = (int) (Math.random() * (size));
 
 				// get a random y coordinate
-				y = (int) (Math.random() * (size)); /**CJ- Should this be mod instead of *? */
+				y = (int) (Math.random() * (size)); // get a random y coordinate
 
 				// get a random horizontal or vertical direction,
 				// 0 = horizontal
 				// 1 = vertical
-				
-				/**CJ- Should this be mod instead of *? */
 				direction = (int) (Math.random() * (2));
 
 				if ((grid[x][y] == " ") && (((direction == 0) && ((x + typeSize[i]) <= size))
@@ -179,24 +191,102 @@ public class Grid {
 					grid[x][y + n] = type[i];
 				}
 			}
-		}//end for
-	}//end placeShips
+		} // end for
+	}// end placeShips
 
 	/**
 	 * Will show the "@" on a hit and "M" on a miss on the grid.
-	 * @param x
-	 * @param y
+	 * 
+	 * @param x - value of x coordinate 
+	 * @param y - value of y coordinate 
 	 */
-	public void fire(int x, int y){
-		if((x > size - 1) || (y > size - 1)){
+	public void fire(int x, int y) {
+		if ((x > size - 1) || (y > size - 1)) {
 			System.out.println("You fired out of bounds!");
-			java.lang.System.exit(2); /**CJ- Can't end program if bad input*/
-		}else if(grid[x][y] == " "){
-			//miss
+			//should not exit in real application
+			//this is for testing purposes only
+			java.lang.System.exit(2);
+		} else if ((grid[x][y] == " ")||(grid[x][y] == "M")) {
+			// miss
 			grid[x][y] = "M";
-		}else{
-			//hit
+		} else {
+			// hit
 			grid[x][y] = "@";
 		}
-	}//end fire
+	}// end fire
+
+	/**
+	 * Prints a grid that only shows hits and misses.
+	 */
+	public void gridPrintOther() {
+		// make a copy of the grid
+		String[][] gridCopy = grid.clone();
+		for (int i = 0; i < gridCopy.length; i++) {
+		    gridCopy[i] = gridCopy[i].clone();
+		}
+	
+		// remove the ships to show just hits and misses
+		for (int i = 0; i < gridCopy.length; i++) {
+			for (int j = 0; j < gridCopy[i].length; j++) {
+				if ((gridCopy[i][j] != " ") && (gridCopy[i][j] != "@") && (gridCopy[i][j] != "M")) {
+					gridCopy[i][j] = " ";
+				}else{
+					gridCopy[i][j] = gridCopy[i][j];
+				}
+			} // end j loop
+		} // end i loop
+		
+			// spacing for formatting
+		System.out.print("   ");
+
+		// print column numbers
+		for (int index = 0; index < gridCopy[0].length; index++) {
+			System.out.print("  " + index + " ");
+		}
+
+		// new line for formatting
+		System.out.println("");
+
+		String split = "";
+		StringJoiner rowJoin = new StringJoiner("+", "|", "|");
+		for (int rowIndex = 0; rowIndex < gridCopy[0].length; rowIndex++) {
+			rowJoin.add(String.format("%3s", "").replace(" ", "-"));
+		}
+		split = rowJoin.toString();
+
+		int colIndex = 0;
+		for (String[] row : gridCopy) {
+			StringJoiner colJoin = new StringJoiner(" | ", "| ", " |");
+
+			// print row numbers
+			System.out.print("   ");
+			colJoin.add("" + colIndex);
+			colIndex++;
+
+			for (String col : row) {
+				colJoin.add(String.format("%s", col));
+			}
+			System.out.println(split);
+			System.out.println(colJoin.toString().substring(1));
+		}
+		System.out.println("   " + split);
+		System.out.println("");
+	}
+
+	/**
+	 * Checks the grid to see if any ships are left. If there are none left this
+	 * method returns a true value.
+	 * 
+	 * @return boolean
+	 */
+	public boolean allSunk() {
+		List<String> list = Arrays.asList(Arrays.asList(grid).get(size - 1));
+		if (list.contains("A") || list.contains("B") || list.contains("S") || list.contains("D")
+				|| list.contains("P")) {
+			return false;
+		} else {
+			// ships are sunk if they are not in the 2D array
+			return true;
+		} // end if else
+	}
 }

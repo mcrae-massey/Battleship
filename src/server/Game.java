@@ -231,6 +231,7 @@ public class Game {
 		}
 	}
 
+	//testing
 	public static void main(String[] args){
 		Game game = new Game();
 		game.message("start 7");
