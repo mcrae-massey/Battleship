@@ -1,12 +1,18 @@
 package client;
 
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 
 import common.MessageListener;
 import common.MessageSource;
 
 public class BattleClient extends MessageSource implements MessageListener {
+	
+	/**
+	 * 
+	 */
+	private Socket socket;
 
 	/**
 	 * 
@@ -47,7 +53,7 @@ public class BattleClient extends MessageSource implements MessageListener {
 	 * 
 	 */
 	public void messageReceived(String message, MessageSource source) {
-
+		notifyReceipt(message);
 	}
 
 	/**

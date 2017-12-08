@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import server.Game;
+
 public class ConnectionAgent extends MessageSource implements Runnable {
 	/**
 	 * 
@@ -17,6 +19,11 @@ public class ConnectionAgent extends MessageSource implements Runnable {
 	 * 
 	 */
 	private Scanner in;
+	
+	/**
+	 * 
+	 */
+	private Game game;
 
 	/**
 	 * 
@@ -26,18 +33,20 @@ public class ConnectionAgent extends MessageSource implements Runnable {
 	/**
 	 * 
 	 */
-	private boolean isRunning;
+	private boolean connected;
 
 	/**
 	 * Constructor.
 	 */
-	public ConnectionAgent(Socket socket) {
+	public ConnectionAgent(Socket socket, Game game) {
+		this.game = game;
 		this.socket = socket;
-		this.isRunning = false;
+		this.connected = false;
 		try {
 			in = new Scanner(new InputStreamReader(socket.getInputStream()));
 			// set auto flush true
 			out = new PrintStream(socket.getOutputStream(), true);
+			connected = true;
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
@@ -54,7 +63,7 @@ public class ConnectionAgent extends MessageSource implements Runnable {
 	 * 
 	 */
 	public boolean isConnected() {
-		return isRunning;
+		return connected;
 	}
 
 	/**
@@ -75,13 +84,13 @@ public class ConnectionAgent extends MessageSource implements Runnable {
 	public void run() {
 		String msg;
 		try {
-			while ((msg = in.nextLine()) != null && isRunning) {
+			while ((msg = in.nextLine()) != null && connected) {
 				this.notifyReceipt(msg);
 			}
 		} catch (NoSuchElementException nsee) {
 			this.close();
 		}
-		isRunning = false;
+		connected = false;
 		try {
 			this.socket.close();
 		} catch (IOException ioe) {

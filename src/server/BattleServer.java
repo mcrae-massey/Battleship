@@ -2,16 +2,28 @@ package server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 
+import common.ConnectionAgent;
 import common.MessageListener;
 import common.MessageSource;
 
 public class BattleServer implements MessageListener {
 	/**
-	 * 
+	 * Welcome socket.
 	 */
 	private ServerSocket serverSocket;
+
+	/**
+	 * client socket.
+	 */
+	private Socket socket;
+
+	/**
+	 * 
+	 */
+	private ConnectionAgent thread;
 
 	/**
 	 * 
@@ -21,12 +33,17 @@ public class BattleServer implements MessageListener {
 	/**
 	 * 
 	 */
+	private int port;
+
+	/**
+	 * 
+	 */
 	private Game game;
 
 	/**
 	 * 
 	 */
-	private ArrayList<MessageListener> player = new ArrayList<MessageListener>();
+	private ArrayList<ConnectionAgent> players;
 
 	/**
 	 * 
@@ -37,20 +54,45 @@ public class BattleServer implements MessageListener {
 	 * Constructor.
 	 */
 	public BattleServer(int port) {
-		isListening = false;
+		this.port = port;
+		players = new ArrayList<ConnectionAgent>();
+		isListening = true;
+		game = new Game();
+	}
+
+	/**
+	 * 
+	 */
+	public void shutDown() {
+		//close connections
+		if (this.isListening) {
+			for (ConnectionAgent i : players) {
+				i.close();
+			}
+			this.isListening = false;
+			// exit server
+			System.exit(0);
+		}
 	}
 
 	/**
 	 * 
 	 */
 	public void listen() {
-//		try {
-//			while (this.isListening) {
-//
-//			}
-//		} catch (IOException ioe) {
-//			// stop running the server
-//		}
+		try {
+			while (this.isListening) {
+				socket = serverSocket.accept();
+				try {
+					// thread = new ConnectionAgent(socket);
+					new Thread(new ConnectionAgent(socket, game)).start();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (IOException ioe) {
+			//should we shut down here?
+			shutDown();
+		}
 
 	}
 
@@ -58,21 +100,23 @@ public class BattleServer implements MessageListener {
 	 * 
 	 */
 	public void broadcast(String message) {
-		// TODO Auto-generated method stub
+		for (ConnectionAgent i : players) {
+			i.sendMessage(message);
+		}
 	}
 
 	/**
 	 * 
 	 */
 	public void messageReceived(String message, MessageSource source) {
-		// TODO Auto-generated method stub
+		game.message(message);
 	}
 
 	/**
 	 * 
 	 */
 	public void sourceClosed(MessageSource source) {
-		
+		players.remove(source);
 	}
 
 }
