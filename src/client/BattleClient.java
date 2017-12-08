@@ -1,6 +1,7 @@
 package client;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import common.MessageListener;
 import common.MessageSource;
@@ -28,18 +29,18 @@ public class BattleClient extends MessageSource implements MessageListener {
 	 * @param port
 	 * @param username
 	 */
-	public BattleClient(InetAddress host, int port, String username) {
-		super();
+	public BattleClient(InetAddress host, int port, String username) throws UnknownHostException {
 		this.host = host;
 		this.port = port;
 		this.username = username;
+		connect();
 	}
 
 	/**
 	 * 
 	 */
 	public void connect() {
-		
+
 	}
 
 	/**
@@ -60,7 +61,7 @@ public class BattleClient extends MessageSource implements MessageListener {
 	 * 
 	 */
 	public void send(String message) {
-		
+
 	}
 
 }
