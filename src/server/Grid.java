@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.StringJoiner;
 
 /**
+ * A class which holds the logic for a single board of Battleship. It makes a grid, can fire, print,
+ * and determine win conditions (all ships sunk).
+ * 
  * @author McRae Massey and CJ Bland
  * @version 11/17/2017
- * grid class makes a grid, populates it with the appropriate amount of ships and
- * provides the fire() method to hit the ships.
+ *
  *  exit 1 - board size too small.
  *  exit 2 - fired out of bounds.
  */
@@ -17,7 +19,7 @@ public class Grid {
 	/** Size of rows and columns for the grid */
 	private int size;
 
-	/** 2D array to star values for grid */
+	/** 2D array to store values for grid */
 	private String[][] grid;
 
 	/** Array of ship types */
@@ -40,30 +42,33 @@ public class Grid {
 	}
 
 	/**
-	 * Makes an empty grid the populates it with ships and prints it out.
+	 * Makes an empty grid the populates it with ships
 	 */
 	public void makeGrid() {
 		grid = new String[size][size];
 
 		fill(grid, " ");
 		placeShips();
-		gridFormatPrint();
+		//gridFormatPrint();
 	}
 
 	/**
-	 * Prints out the grid structure with numbers on each axis.
+	 * Prints out the grid structure with numbers on each axis. Called to print a users
+	 * own board
 	 * 
 	 * @param grid - the grid to be printed.
 	 */
-	public void gridFormatPrint() {
-
+	public String gridFormatPrint() {
+        String print = "   ";
 		// spacing for formatting
-		System.out.print("   ");
+		//System.out.print("   ");
 
 		// print column numbers
 		for (int index = 0; index < grid[0].length; index++) {
-			System.out.print("  " + index + " ");
+			//System.out.print("  " + index + " ");
+            print += ("  " + index + " ");
 		}
+        print += "\n";
 
 		// new line for formatting
 		System.out.println("");
@@ -80,18 +85,24 @@ public class Grid {
 			StringJoiner colJoin = new StringJoiner(" | ", "| ", " |");
 
 			// print row numbers
-			System.out.print("   ");
+			//System.out.print("   ");
+            print += ("   ");
 			colJoin.add("" + colIndex);
 			colIndex++;
 
 			for (String col : row) {
 				colJoin.add(String.format("%s", col));
 			}
-			System.out.println(split);
-			System.out.println(colJoin.toString().substring(1));
+            print += (split + "\n" + colJoin.toString().substring(1) + "\n");
+
+			//System.out.println(split);
+			//System.out.println(colJoin.toString().substring(1));
 		}
-		System.out.println("   " + split);
-		System.out.println("");
+
+        print += ("   " + split + "\n");
+		//System.out.println("   " + split);
+		//System.out.println("");
+        return print;
 	}
 
 	/**
@@ -148,10 +159,22 @@ public class Grid {
 			type = new String[] { "B", "S", "D", "P" };
 			typeSize = new int[] { 4, 3, 3, 2 };
 			// error if board size is smaller than 4
-		} else if (size < 4) {
-			System.out.println("Board size too small!");
-			java.lang.System.exit(1);
+		} else if (size == 3) {
+			//System.out.println("Board size too small!");
+			//java.lang.System.exit(1);
+            numShips = 2;
+            type = new String[] {"P", "D"};
+            typeSize = new int[] {2,3};            
 		}
+        else if(size == 2){
+            numShips = 1;
+            type = new String[] {"P"};
+            typeSize = new int[] {2};
+        }
+        else{
+            //should be an else
+        }
+
 		for (int i = 0; i < numShips; i++) {
 
 			flag = true;
@@ -178,7 +201,8 @@ public class Grid {
 						} else if ((direction == 1) && ((grid[x][y + j] != " "))) {
 							overlap = true;
 						}
-					}
+					}	
+
 					if (overlap == false) {
 						flag = false;
 					}
@@ -195,7 +219,7 @@ public class Grid {
 	}// end placeShips
 
 	/**
-	 * Will show the "@" on a hit and "M" on a miss on the grid.
+	 * Will show an at character for a hit and M for a miss on the grid.
 	 * 
 	 * @param x - value of x coordinate 
 	 * @param y - value of y coordinate 
@@ -216,9 +240,12 @@ public class Grid {
 	}// end fire
 
 	/**
-	 * Prints a grid that only shows hits and misses.
+	 * Prints a grid that only shows hits and misses. Called to print another users board
 	 */
-	public void gridPrintOther() {
+	public String gridPrintOther() {
+
+        String print = "";
+
 		// make a copy of the grid
 		String[][] gridCopy = grid.clone();
 		for (int i = 0; i < gridCopy.length; i++) {
@@ -237,15 +264,19 @@ public class Grid {
 		} // end i loop
 		
 			// spacing for formatting
-		System.out.print("   ");
+		//System.out.print("   ");
+        print += ("   ");
 
 		// print column numbers
 		for (int index = 0; index < gridCopy[0].length; index++) {
-			System.out.print("  " + index + " ");
+			//System.out.print("  " + index + " ");
+            print += ("  " + index + " ");
 		}
+        print += "\n";
 
 		// new line for formatting
-		System.out.println("");
+		//System.out.println("");
+       
 
 		String split = "";
 		StringJoiner rowJoin = new StringJoiner("+", "|", "|");
@@ -259,28 +290,30 @@ public class Grid {
 			StringJoiner colJoin = new StringJoiner(" | ", "| ", " |");
 
 			// print row numbers
-			System.out.print("   ");
+			//System.out.print("   ");
+            print += "   ";
 			colJoin.add("" + colIndex);
 			colIndex++;
 
 			for (String col : row) {
 				colJoin.add(String.format("%s", col));
 			}
-			System.out.println(split);
-			System.out.println(colJoin.toString().substring(1));
+			//System.out.println(split);
+            print += (split + "\n" + colJoin.toString().substring(1)+"\n");
+			//System.out.println(colJoin.toString().substring(1));
 		}
-		System.out.println("   " + split);
-		System.out.println("");
-	}
-
+        print += ("   " + split + "\n\n");
+		//System.out.println("   " + split);
+		//System.out.println("");
+        return print;
+}
 	/**
-	 * Checks the grid to see if any ships are left. If there are none left this
-	 * method returns a true value.
-	 * 
-	 * @return boolean
+	 * Checks the grid to see if any ships are left.
+	 *
+	 * @return true if all ships sunk, otherwise false
 	 */
 	public boolean allSunk() {
-		List<String> list = Arrays.asList(Arrays.asList(grid).get(size - 1));
+		/*List<String> list = Arrays.asList(Arrays.asList(grid).get(size - 1));
 		if (list.contains("A") || list.contains("B") || list.contains("S") || list.contains("D")
 				|| list.contains("P")) {
 			return false;
@@ -288,5 +321,18 @@ public class Grid {
 			// ships are sunk if they are not in the 2D array
 			return true;
 		} // end if else
+        */
+        boolean isSunk = true;
+
+        for(int i = 0; i < grid.length; i++){
+            for(int j = 0; j < grid[i].length; j++){
+                if(grid[i][j].contains("A") || grid[i][j].contains("B") ||
+                    grid[i][j].contains("S") || grid[i][j].contains("D") ||
+                    grid[i][j].contains("P")){
+                    isSunk = false;
+                }
+            }
+        }
+        return isSunk;
 	}
 }
